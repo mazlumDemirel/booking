@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'jacoco'
+}
+
+ext {
+    lombokVersion = '1.18.34'
+    mapStructVersion = '1.6.2'
+    springBootVersion = '3.4.0'
+    lombokMapstructBindingVersion = '0.2.0'
+    h2Version = '2.3.232'
+    hibernateCoreVersion = '6.6.0.Final'
+    springFoxSwaggerVersion = '3.0.0'
+    openAPIUIVersion = '2.6.0'
+}
+group = 'com.cloudbees'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "com.h2database:h2:$h2Version"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$openAPIUIVersion"
+    implementation "org.springdoc:springdoc-openapi-starter-common:$openAPIUIVersion"
+    implementation "org.mapstruct:mapstruct:$mapStructVersion"
+    implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"
+    implementation "org.hibernate.orm:hibernate-core:$hibernateCoreVersion"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-validation:$springBootVersion"
+    compileOnly "org.projectlombok:lombok-mapstruct-binding:$lombokMapstructBindingVersion"
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapStructVersion"
+    testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+test {
+    finalizedBy jacocoTestReport // report is always generated after tests run
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+
+configurations {
+    bootJar.archiveFileName = 'app.jar'
+}
+
+springBoot {
+    mainClass = 'com.cloudbees.booking.BookingApplication'
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 1
+            }
+        }
+    }
+}
